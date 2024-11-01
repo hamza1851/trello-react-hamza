@@ -1,35 +1,64 @@
-import axios from "axios"
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Card, Button } from "@mui/material"
+import ListCard from "./ListCard"
+import DeleteIcon from "@mui/icons-material/Delete"
 
-const List = () => {
-  const [allLists, setAllLists] = useState([])
-  const { boardID } = useParams()
-
-  useEffect(() => {
-    const getLists = async () => {
-      try {
-        const response = await axios.get(
-          `https://api.trello.com/1/boards/${boardID}/lists?key=${
-            import.meta.env.VITE_API_KEY
-          }&token=${import.meta.env.VITE_API_TOKEN}`
-        )
-        console.log("Hey there")
-        console.log("Fetched Lists Data:", response.data) // Logs the data received from the API
-
-        setAllLists(response.data)
-      } catch (error) {
-        console.error("Error fetching lists:", error)
-      }
-    }
-    getLists()
-  }, [boardID])
-
+const List = ({ list, deleteList }) => {
   return (
-    <div>
-      {allLists.map((list) => (
-        <p key={list.id}>{list.name}</p>
-      ))}
+    <div style={{ flex: "0 0 auto", width: "250px", padding: "8px" }}>
+      <Card
+        sx={{
+          backgroundColor: "#3f5cc8",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          borderRadius: "8px",
+          padding: "20px",
+          transition: "transform 0.2s",
+          height: "fit-content",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.15)",
+          },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          minHeight: "200px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: "1.2rem",
+              color: "#ffffff",
+            }}
+          >
+            {list.name}
+          </span>
+          <Button
+            onClick={() => deleteList(list.id)}
+            sx={{
+              marginBottom: "20px",
+              minWidth: "auto",
+              padding: "6px",
+              color: "#ffffff",
+              "&:hover": {
+                color: "#e8f5e9",
+              },
+            }}
+          >
+            <DeleteIcon />
+          </Button>
+        </div>
+
+        <ListCard listId={list.id} />
+      </Card>
     </div>
   )
 }
