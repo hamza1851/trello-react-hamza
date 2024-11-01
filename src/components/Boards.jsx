@@ -1,12 +1,30 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Box, Paper, Typography, Grid } from "@mui/material"
 import axios from "axios"
 import CreateBoardDialogue from "./CreateBoardDialogue"
 import { useNavigate } from "react-router-dom"
 
-const Boards = ({ boards }) => {
-  const navigate = useNavigate()
+const Boards = () => {
+  const [boards, setBoards] = useState([])
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    fetchBoards()
+  }, [])
+
+  const fetchBoards = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_URL}members/me/boards?key=${
+          import.meta.env.VITE_API_KEY
+        }&token=${import.meta.env.VITE_API_TOKEN}`
+      )
+      setBoards(response.data)
+    } catch (error) {
+      console.error("Error fetching boards data:", error)
+    }
+  }
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -17,30 +35,29 @@ const Boards = ({ boards }) => {
   }
 
   const handleCreateBoard = async (newBoardData) => {
-    const createBoardReq = async () => {
-      try {
-        const response = await axios.post(
-          `https://api.trello.com/1/boards/`,
-          null,
-          {
-            params: {
-              name: newBoardData.name,
-              key: import.meta.env.VITE_API_KEY,
-              token: import.meta.env.VITE_API_TOKEN,
-              backgroundColor: newBoardData.backgroundColor,
-            },
-          }
-        )
+    try {
+      const response = await axios.post(
+        `https://api.trello.com/1/boards/`,
+        null,
+        {
+          params: {
+            name: newBoardData.name,
+            key: import.meta.env.VITE_API_KEY,
+            token: import.meta.env.VITE_API_TOKEN,
+          },
+        }
+      )
 
-        console.log(response)
+      console.log(response)
 
-        handleClose()
-      } catch (error) {
-        console.error("Error creating board:", error)
-      }
+      // Refresh boards list after successful creation
+      await fetchBoards()
+
+      // Close the dialog
+      handleClose()
+    } catch (error) {
+      console.error("Error creating board:", error)
     }
-
-    createBoardReq()
   }
 
   return (
