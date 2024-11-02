@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { Box } from "@mui/material"
-import CreateBoardDialogue from "./CreateBoardDialogue" // Ensure this path is correct
+import CreateBoardDialogue from "./CreateBoardDialogue" 
 import BoardList from "./BoardList"
 import AddBoard from "./AddBoard"
-import { fetchBoards, createBoard } from "../Logic/apiCRUD" // Adjusted import path
+import { fetchBoards, createBoard } from "../Logic/apiCRUD" 
 
 const Boards = () => {
   const [boards, setBoards] = useState([])
