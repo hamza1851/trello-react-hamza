@@ -26,6 +26,11 @@ function Navbar() {
     setAnchorElNav(null)
   }
 
+  const handleNavigate = (path) => {
+    navigate(path)
+    handleCloseNavMenu()
+  }
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -35,7 +40,7 @@ function Navbar() {
             variant="h6"
             noWrap
             component="a"
-            onClick={() => navigate("/")}
+            onClick={() => handleNavigate("/")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -77,22 +82,18 @@ function Navbar() {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography
-                    sx={{ textAlign: "center" }}
-                    onClick={() => navigate("/")}
-                  >
-                    {page}
-                  </Typography>
+                <MenuItem key={page} onClick={() => handleNavigate("/")}>
+                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
+
           <Typography
             variant="h5"
             noWrap
             component="a"
-            onClick={() => navigate("/")}
+            onClick={() => handleNavigate("/")}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -106,11 +107,12 @@ function Navbar() {
           >
             Trello
           </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => navigate("/")}
+                onClick={() => handleNavigate("/")}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
