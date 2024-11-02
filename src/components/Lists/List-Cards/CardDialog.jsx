@@ -6,7 +6,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material"
-import CheckList from "../../CheckList"
+import CheckList from "../../CheckList/CheckList"
 
 const CardDialog = ({ open, onClose, card }) => {
   if (!card) return null

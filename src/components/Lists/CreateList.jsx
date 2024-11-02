@@ -6,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogTitle from "@mui/material/DialogTitle"
 import { useParams } from "react-router-dom"
-import { createList } from "../Logic/apiCRUD" // Import the new API function
+import { createList } from "../../Api-Calls/listsCRUD"
 
 const CreateList = ({ onCreateList }) => {
   const [open, setOpen] = useState(false)
@@ -27,7 +27,7 @@ const CreateList = ({ onCreateList }) => {
     if (!listName) return
 
     try {
-      const newList = await createList(boardID, listName) // Use the new API function
+      const newList = await createList(boardID, listName)
       setListName("")
       setOpen(false)
       onCreateList(newList)

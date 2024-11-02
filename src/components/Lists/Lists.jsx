@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import List from "./List"
 import CreateList from "./CreateList"
-import { fetchLists, deleteList as deleteListApi } from "../../Logic/apiCRUD" // Adjusted import path
+import {
+  fetchLists,
+  deleteList as deleteListApi,
+} from "../../Api-Calls/listsCRUD"
 
 const Lists = () => {
   const [allLists, setAllLists] = useState([])

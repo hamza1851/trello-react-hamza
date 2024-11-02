@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import Card from "@mui/material/Card"
 import Button from "@mui/material/Button"
 import DeleteIcon from "@mui/icons-material/Delete"
-import AddCardDialog from "./Lists/List-Cards/AddCardDialog" // Updated import path
-import CardDialog from "./Lists/List-Cards/CardDialog" // Updated import path
-import { fetchCards, deleteCard, addCard } from "./apiCRUD" // Adjusted import to match new apiCRUD structure
+import AddCardDialog from "./List-Cards/AddCardDialog"
+import CardDialog from "./List-Cards/CardDialog"
+import { addCard, deleteCard, fetchCards } from "../../Api-Calls/listsCRUD"
 
 const ListCard = ({ listId }) => {
   const [cardsList, setCardsList] = useState([])
@@ -51,6 +50,7 @@ const ListCard = ({ listId }) => {
           <Card
             onClick={() => handleOpenCard(card)}
             sx={{
+              backgroundColor: "#7a94e2",
               padding: "16px",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
@@ -65,7 +65,7 @@ const ListCard = ({ listId }) => {
             }}
           >
             <span
-              style={{ fontWeight: 500, fontSize: "1.1rem", color: "#333" }}
+              style={{ fontWeight: 500, fontSize: "1.1rem", color: "#fff" }}
             >
               {card.name}
             </span>
