@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Box, Paper, Typography, Grid } from "@mui/material"
+import { Box, Paper, Typography } from "@mui/material"
 import axios from "axios"
 import CreateBoardDialogue from "./CreateBoardDialogue"
 import { useNavigate } from "react-router-dom"
@@ -63,15 +63,26 @@ const Boards = () => {
   return (
     <>
       <Box sx={{ padding: "20px", maxWidth: "1240px", mx: "auto" }}>
-        <Grid container spacing={3} wrap="wrap" justifyContent="flex-start">
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 3,
+            justifyContent: "flex-start",
+          }}
+        >
           {boards.map(({ id, name, prefs }) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
+            <Box
               key={id}
               onClick={() => navigate(`/${id}`)}
+              sx={{
+                width: {
+                  xs: "100%",
+                  sm: "calc(50% - 12px)",
+                  md: "calc(33.33% - 16px)",
+                },
+                cursor: "pointer",
+              }}
             >
               <Paper
                 sx={{
@@ -100,10 +111,20 @@ const Boards = () => {
                   {name}
                 </Typography>
               </Paper>
-            </Grid>
+            </Box>
           ))}
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Box
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "calc(50% - 12px)",
+                md: "calc(33.33% - 16px)",
+              },
+              cursor: "pointer",
+            }}
+            onClick={handleClickOpen}
+          >
             <Paper
               sx={{
                 minHeight: { xs: "400px", sm: "250px" },
@@ -111,16 +132,13 @@ const Boards = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                cursor: "pointer",
-                color: "black",
                 "&:hover": {
                   backgroundColor: "grey.400",
                 },
               }}
-              onClick={handleClickOpen}
             >
-              <div
-                style={{
+              <Box
+                sx={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -130,10 +148,10 @@ const Boards = () => {
               >
                 <Typography variant="h6">+</Typography>
                 <Typography variant="subtitle1">Add Board</Typography>
-              </div>
+              </Box>
             </Paper>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
 
       <CreateBoardDialogue
