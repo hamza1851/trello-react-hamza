@@ -10,7 +10,6 @@ export const fetchBoards = async () => {
     return response.data
   } catch (error) {
     console.error("Error fetching boards data:", error)
-    throw error // Re-throw to handle in the component
   }
 }
 
@@ -30,6 +29,41 @@ export const createBoard = async (newBoardData) => {
     return response.data
   } catch (error) {
     console.error("Error creating board:", error)
-    throw error // Re-throw to handle in the component
+  }
+}
+
+// Lists CRUD
+export const fetchLists = async (boardID) => {
+  try {
+    const response = await axios.get(
+      `https://api.trello.com/1/boards/${boardID}/lists?key=${api_key}&token=${token}`
+    )
+    return response.data
+  } catch (error) {
+    console.error("Error fetching lists:", error)
+  }
+}
+
+export const deleteList = async (listId) => {
+  const deleteUrl = `https://api.trello.com/1/lists/${listId}/closed?key=${api_key}&token=${token}`
+
+  try {
+    await axios.put(deleteUrl, { value: true })
+  } catch (error) {
+    console.error("Error while deleting a list:", error)
+  }
+}
+
+export const createList = async (boardID, listName) => {
+  const url = `https://api.trello.com/1/lists?key=${API_KEY}&token=${TOKEN}`
+
+  try {
+    const response = await axios.post(url, {
+      name: listName,
+      idBoard: boardID,
+    })
+    return response.data
+  } catch (error) {
+    throw new Error("Error while creating list: " + error.message)
   }
 }
