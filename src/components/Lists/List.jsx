@@ -1,6 +1,6 @@
 import React from "react"
 import { Card, Button } from "@mui/material"
-import ListCard from "../ListCard"
+import ListCard from "./ListCard"
 import DeleteIcon from "@mui/icons-material/Delete"
 
 const List = ({ list, deleteList }) => {
