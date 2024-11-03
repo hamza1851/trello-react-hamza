@@ -5,13 +5,15 @@ import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogTitle from "@mui/material/DialogTitle"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { createList } from "../../Api-Calls/listsCRUD"
 
 const CreateList = ({ onCreateList }) => {
   const [open, setOpen] = useState(false)
   const [listName, setListName] = useState("")
   const { boardID } = useParams()
+
+  const navigate = useNavigate()
 
   const handleClose = () => {
     setOpen(false)
@@ -27,7 +29,7 @@ const CreateList = ({ onCreateList }) => {
     if (!listName) return
 
     try {
-      const newList = await createList(boardID, listName)
+      const newList = await createList(boardID, listName, navigate)
       setListName("")
       setOpen(false)
       onCreateList(newList)

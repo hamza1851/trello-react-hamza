@@ -4,14 +4,17 @@ import CreateBoardDialogue from "./CreateBoardDialogue"
 import BoardList from "./BoardList"
 import AddBoard from "./AddBoard"
 import { fetchBoards, createBoard } from "../../Api-Calls/boardsCRUD"
+import { useNavigate } from "react-router-dom"
 
 const Boards = () => {
   const [boards, setBoards] = useState([])
   const [open, setOpen] = useState(false)
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     const loadBoards = async () => {
-      const boardsData = await fetchBoards()
+      const boardsData = await fetchBoards(navigate)
       setBoards(boardsData)
     }
     loadBoards()
@@ -27,7 +30,7 @@ const Boards = () => {
 
   const handleCreateBoard = async (newBoardData) => {
     await createBoard(newBoardData)
-    const boardsData = await fetchBoards()
+    const boardsData = await fetchBoards(navigate)
     setBoards(boardsData)
     handleClose()
   }

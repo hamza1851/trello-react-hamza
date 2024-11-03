@@ -9,6 +9,8 @@ import {
   DialogContent,
   DialogTitle,
   LinearProgress,
+  CircularProgress,
+  Typography,
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
 import {
@@ -18,18 +20,20 @@ import {
   updateCheckItemState,
 } from "../../Api-Calls/checklistAPI"
 
-const CheckListItem = ({ checkList }) => {
+const CheckListItem = ({ checkList, navigate }) => {
   const [checkItems, setCheckItems] = useState([])
   const [newCheckItem, setNewCheckItem] = useState("")
   const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     const fetchCheckItems = async () => {
       setLoading(true)
       try {
-        const items = await getCheckItems(checkList.id)
+        const items = await getCheckItems(checkList.id, navigate)
         setCheckItems(items)
+        updateProgress(items)
       } catch (error) {
         console.error("Error fetching check items:", error)
       } finally {
@@ -39,14 +43,24 @@ const CheckListItem = ({ checkList }) => {
     fetchCheckItems()
   }, [checkList.id])
 
+  const updateProgress = (items) => {
+    const completedItems = items.filter(
+      (item) => item.state === "complete"
+    ).length
+    const totalItems = items.length
+    const progress = totalItems ? (completedItems / totalItems) * 100 : 0
+    setProgress(progress)
+  }
+
   const handleAddCheckItem = async () => {
     if (!newCheckItem) return
 
     try {
-      const addedItem = await addCheckItem(checkList.id, newCheckItem)
+      const addedItem = await addCheckItem(checkList.id, newCheckItem, navigate)
       setCheckItems((prev) => [...prev, addedItem])
+      updateProgress([...checkItems, addedItem])
       setNewCheckItem("")
-      setOpen((prev) => !prev)
+      setOpen(false)
     } catch (error) {
       console.error("Error adding checklist item:", error)
     }
@@ -54,27 +68,28 @@ const CheckListItem = ({ checkList }) => {
 
   const handleDeleteCheckItem = async (itemId) => {
     try {
-      await deleteCheckItem(checkList.id, itemId)
-      setCheckItems((prev) => prev.filter((item) => item.id !== itemId))
+      await deleteCheckItem(checkList.id, itemId, navigate)
+      const updatedItems = checkItems.filter((item) => item.id !== itemId)
+      setCheckItems(updatedItems)
+      updateProgress(updatedItems)
     } catch (error) {
       console.error("Error deleting checklist item:", error)
     }
   }
 
   const handleCheckItemStateChange = async (itemId, currentState) => {
-    console.log(currentState)
     const newState = currentState === "complete" ? "incomplete" : "complete"
 
     try {
-      await updateCheckItemState(checkList.idCard, itemId, newState)
-      setCheckItems((prev) =>
-        prev.map((item) => {
-          if (item.id === itemId) {
-            return { ...item, state: newState }
-          }
-          return item
-        })
-      )
+      await updateCheckItemState(checkList.idCard, itemId, newState, navigate)
+      const updatedItems = checkItems.map((item) => {
+        if (item.id === itemId) {
+          return { ...item, state: newState }
+        }
+        return item
+      })
+      setCheckItems(updatedItems)
+      updateProgress(updatedItems)
     } catch (error) {
       console.error("Error updating checklist item state:", error)
     }
@@ -82,7 +97,30 @@ const CheckListItem = ({ checkList }) => {
 
   return (
     <Box>
-      {loading && <LinearProgress />}
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" height="100px">
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box display="flex" alignItems="center" mb={2}>
+          <Typography variant="body2" sx={{ minWidth: "50px" }}>
+            {Math.round(progress)}%
+          </Typography>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
+              width: "100%",
+              ml: 1,
+              bgcolor: "#81C784", // lighter green background color
+              "& .MuiLinearProgress-bar": {
+                backgroundColor: "#4CAF50", // darker green for progress
+              },
+            }}
+          />
+        </Box>
+      )}
+
       {checkItems.map((item) => (
         <Box key={item.id} display="flex" alignItems="center" mb={1}>
           <Checkbox
@@ -106,6 +144,7 @@ const CheckListItem = ({ checkList }) => {
           </Button>
         </Box>
       ))}
+
       <Button variant="outlined" onClick={() => setOpen(true)}>
         + Add Item
       </Button>

@@ -5,12 +5,15 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import AddCardDialog from "./List-Cards/AddCardDialog"
 import CardDialog from "./List-Cards/CardDialog"
 import { addCard, deleteCard, fetchCards } from "../../Api-Calls/listsCRUD"
+import { useNavigate } from "react-router-dom"
 
 const ListCard = ({ listId }) => {
   const [cardsList, setCardsList] = useState([])
   const [showAddCardDialog, setShowAddCardDialog] = useState(false)
   const [selectedCard, setSelectedCard] = useState(null)
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadCards = async () => {
@@ -29,7 +32,7 @@ const ListCard = ({ listId }) => {
   const handleAddCard = async (cardName) => {
     if (!cardName) return
 
-    const newCard = await addCard(listId, cardName)
+    const newCard = await addCard(listId, cardName, navigate)
     setCardsList((prevCards) => [...prevCards, newCard])
     setShowAddCardDialog(false)
   }

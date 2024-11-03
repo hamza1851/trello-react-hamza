@@ -14,17 +14,19 @@ import {
   deleteCheckList,
   addCheckList,
 } from "../../Api-Calls/checklistAPI"
+import { useNavigate } from "react-router-dom"
 
 const CheckList = ({ card }) => {
   const [checkList, setCheckList] = useState([])
   const [checkListName, setCheckListName] = useState("")
   const [open, setOpen] = useState(false)
+  const naviagte = useNavigate()
 
   useEffect(() => {
     const fetchCheckLists = async () => {
       if (card.id) {
         try {
-          const lists = await getCheckLists(card.id)
+          const lists = await getCheckLists(card.id, naviagte)
           setCheckList(lists)
         } catch (error) {
           console.error("Error fetching checklists:", error)
@@ -43,7 +45,7 @@ const CheckList = ({ card }) => {
     if (!checkListName) return
 
     try {
-      const newCheckList = await addCheckList(card.id, checkListName)
+      const newCheckList = await addCheckList(card.id, checkListName, naviagte)
       setCheckList((prev) => [...prev, newCheckList])
       handleCloseAddList()
     } catch (error) {
@@ -53,7 +55,7 @@ const CheckList = ({ card }) => {
 
   const handleDeleteCheckList = async (list) => {
     try {
-      await deleteCheckList(card.id, list.id)
+      await deleteCheckList(card.id, list.id, naviagte)
       setCheckList((prev) => prev.filter((item) => item.id !== list.id))
     } catch (error) {
       console.error("Error deleting checklist:", error)
@@ -102,7 +104,7 @@ const CheckList = ({ card }) => {
               <DeleteIcon />
             </Button>
           </div>
-          <CheckListItem checkList={list} />
+          <CheckListItem checkList={list} navigate={naviagte} />
         </div>
       ))}
       <Button

@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import List from "./List"
 import CreateList from "./CreateList"
-import {
-  fetchLists,
-  deleteList as deleteListApi,
-} from "../../Api-Calls/listsCRUD"
+import { fetchLists, deleteList } from "../../Api-Calls/listsCRUD"
 
 const Lists = () => {
   const [allLists, setAllLists] = useState([])
   const { boardID } = useParams()
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     const getLists = async () => {
-      const listsData = await fetchLists(boardID)
+      const listsData = await fetchLists(boardID, navigate)
       setAllLists(listsData)
     }
     getLists()
   }, [boardID])
 
   const handleDeleteList = async (listId) => {
-    await deleteListApi(listId)
+    await deleteList(listId, navigate)
     setAllLists(allLists.filter((list) => list.id !== listId))
   }
 
@@ -31,6 +30,7 @@ const Lists = () => {
   return (
     <div
       style={{
+        minHeight:"83vh",
         overflowX: "auto",
         display: "flex",
         gap: "16px",
