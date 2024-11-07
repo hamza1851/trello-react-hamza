@@ -16,7 +16,7 @@ export const fetchBoards = async (navigate) => {
 }
 
 // Create Board
-export const createBoard = async (newBoardData, navigate) => {
+export const createBoard = async (navigate) => {
   try {
     const response = await axios.post(
       `https://api.trello.com/1/boards/`,

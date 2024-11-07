@@ -28,8 +28,8 @@ const Boards = () => {
     setOpen(false)
   }
 
-  const handleCreateBoard = async (newBoardData) => {
-    await createBoard(newBoardData)
+  const handleCreateBoard = async () => {
+    await createBoard()
     const boardsData = await fetchBoards(navigate)
     setBoards(boardsData)
     handleClose()
