@@ -7,14 +7,19 @@ import {
   Button,
   TextField,
 } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
 const CreateBoardDialogue = ({ open, onClose, onCreate }) => {
   const [newBoardName, setNewBoardName] = useState("")
+  const navigate = useNavigate()
 
   const handleCreate = () => {
-    onCreate({
-      name: newBoardName,
-    })
+    onCreate(
+      {
+        name: newBoardName,
+      },
+      navigate
+    )
     setNewBoardName("")
   }
 
