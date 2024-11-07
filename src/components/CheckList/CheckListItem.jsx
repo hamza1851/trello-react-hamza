@@ -35,7 +35,7 @@ const CheckListItem = ({ checkList, navigate }) => {
         setCheckItems(items)
         updateProgress(items)
       } catch (error) {
-        console.error("Error fetching check items:", error)
+        navigate("/error")
       } finally {
         setLoading(false)
       }
@@ -62,7 +62,7 @@ const CheckListItem = ({ checkList, navigate }) => {
       setNewCheckItem("")
       setOpen(false)
     } catch (error) {
-      console.error("Error adding checklist item:", error)
+      navigate("/error")
     }
   }
 
@@ -73,7 +73,7 @@ const CheckListItem = ({ checkList, navigate }) => {
       setCheckItems(updatedItems)
       updateProgress(updatedItems)
     } catch (error) {
-      console.error("Error deleting checklist item:", error)
+      navigate("/error")
     }
   }
 
@@ -91,14 +91,19 @@ const CheckListItem = ({ checkList, navigate }) => {
       setCheckItems(updatedItems)
       updateProgress(updatedItems)
     } catch (error) {
-      console.error("Error updating checklist item state:", error)
+      navigate("/error")
     }
   }
 
   return (
     <Box>
       {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" height="100px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100px"
+        >
           <CircularProgress />
         </Box>
       ) : (

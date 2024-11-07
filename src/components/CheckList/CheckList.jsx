@@ -20,16 +20,16 @@ const CheckList = ({ card }) => {
   const [checkList, setCheckList] = useState([])
   const [checkListName, setCheckListName] = useState("")
   const [open, setOpen] = useState(false)
-  const naviagte = useNavigate()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchCheckLists = async () => {
       if (card.id) {
         try {
-          const lists = await getCheckLists(card.id, naviagte)
+          const lists = await getCheckLists(card.id, navigate)
           setCheckList(lists)
         } catch (error) {
-          console.error("Error fetching checklists:", error)
+          navigate("/error")
         }
       }
     }
@@ -45,20 +45,20 @@ const CheckList = ({ card }) => {
     if (!checkListName) return
 
     try {
-      const newCheckList = await addCheckList(card.id, checkListName, naviagte)
+      const newCheckList = await addCheckList(card.id, checkListName, navigate)
       setCheckList((prev) => [...prev, newCheckList])
       handleCloseAddList()
     } catch (error) {
-      console.error("Error adding checklist:", error)
+      navigate("/error")
     }
   }
 
   const handleDeleteCheckList = async (list) => {
     try {
-      await deleteCheckList(card.id, list.id, naviagte)
+      await deleteCheckList(card.id, list.id, navigate)
       setCheckList((prev) => prev.filter((item) => item.id !== list.id))
     } catch (error) {
-      console.error("Error deleting checklist:", error)
+      navigate("/error")
     }
   }
 
@@ -104,7 +104,7 @@ const CheckList = ({ card }) => {
               <DeleteIcon />
             </Button>
           </div>
-          <CheckListItem checkList={list} navigate={naviagte} />
+          <CheckListItem checkList={list} navigate={navigate} />
         </div>
       ))}
       <Button
