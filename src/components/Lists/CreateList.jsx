@@ -34,7 +34,7 @@ const CreateList = ({ onCreateList }) => {
       setOpen(false)
       onCreateList(newList)
     } catch (error) {
-      console.error("Error while creating list:", error)
+      navigate("/error")
     }
   }
 
