@@ -1,8 +1,10 @@
 import axios from "axios"
 
-const API_URL = `${import.meta.env.VITE_URL}members/me/boards?key=${
-  import.meta.env.VITE_API_KEY
-}&token=${import.meta.env.VITE_API_TOKEN}`
+const API_KEY = import.meta.env.VITE_API_KEY
+const TOKEN = import.meta.env.VITE_API_TOKEN
+const URL = import.meta.env.VITE_URL
+
+const API_URL = `${URL}members/me/boards?key=${API_KEY}&token=${TOKEN}`
 
 // Fetch Boards
 export const fetchBoards = async (navigate) => {
@@ -10,25 +12,20 @@ export const fetchBoards = async (navigate) => {
     const response = await axios.get(API_URL)
     return response.data
   } catch (error) {
-    // console.error("Error fetching boards data:", error)
     navigate("./error")
   }
 }
 
 // Create Board
-export const createBoard = async (navigate) => {
+export const createBoard = async (newBoardData, navigate) => {
   try {
-    const response = await axios.post(
-      `https://api.trello.com/1/boards/`,
-      null,
-      {
-        params: {
-          name: newBoardData.name,
-          key: import.meta.env.VITE_API_KEY,
-          token: import.meta.env.VITE_API_TOKEN,
-        },
-      }
-    )
+    const response = await axios.post(`${URL}boards/`, null, {
+      params: {
+        name: newBoardData.name,
+        key: import.meta.env.VITE_API_KEY,
+        token: import.meta.env.VITE_API_TOKEN,
+      },
+    })
     return response.data
   } catch (error) {
     navigate("./error")

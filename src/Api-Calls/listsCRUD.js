@@ -1,12 +1,14 @@
 import axios from "axios"
 
+const API_KEY = import.meta.env.VITE_API_KEY
+const TOKEN = import.meta.env.VITE_API_TOKEN
+const URL = import.meta.env.VITE_URL
+
 // Fetch Lists
 export const fetchLists = async (boardID, navigate) => {
   try {
     const response = await axios.get(
-      `https://api.trello.com/1/boards/${boardID}/lists?key=${
-        import.meta.env.VITE_API_KEY
-      }&token=${import.meta.env.VITE_API_TOKEN}`
+      `${URL}boards/${boardID}/lists?key=${API_KEY}&token=${TOKEN}`
     )
     return response.data
   } catch (error) {
@@ -16,9 +18,7 @@ export const fetchLists = async (boardID, navigate) => {
 
 // Create List
 export const createList = async (boardID, listName, navigate) => {
-  const url = `https://api.trello.com/1/lists?key=${
-    import.meta.env.VITE_API_KEY
-  }&token=${import.meta.env.VITE_API_TOKEN}`
+  const url = `${URL}lists?key=${API_KEY}&token=${TOKEN}`
   try {
     const response = await axios.post(url, {
       name: listName,
@@ -32,9 +32,7 @@ export const createList = async (boardID, listName, navigate) => {
 
 // Delete List
 export const deleteList = async (listId, navigate) => {
-  const deleteUrl = `https://api.trello.com/1/lists/${listId}/closed?key=${
-    import.meta.env.VITE_API_KEY
-  }&token=${import.meta.env.VITE_API_TOKEN}`
+  const deleteUrl = `${URL}lists/${listId}/closed?key=${API_KEY}&token=${TOKEN}`
   try {
     await axios.put(deleteUrl, { value: true })
   } catch (error) {
@@ -45,9 +43,7 @@ export const deleteList = async (listId, navigate) => {
 // Fetch Cards in a List
 export const fetchCards = async (listId, navigate) => {
   try {
-    const url = `https://api.trello.com/1/lists/${listId}/cards?key=${
-      import.meta.env.VITE_API_KEY
-    }&token=${import.meta.env.VITE_API_TOKEN}`
+    const url = `${URL}lists/${listId}/cards?key=${API_KEY}&token=${TOKEN}`
     const response = await axios.get(url)
     return response.data
   } catch (error) {
@@ -59,9 +55,7 @@ export const fetchCards = async (listId, navigate) => {
 export const addCard = async (listId, cardName, navigate) => {
   if (!cardName) return
 
-  const url = `https://api.trello.com/1/cards?idList=${listId}&key=${
-    import.meta.env.VITE_API_KEY
-  }&token=${import.meta.env.VITE_API_TOKEN}`
+  const url = `${URL}cards?idList=${listId}&key=${API_KEY}&token=${TOKEN}`
   try {
     const response = await axios.post(url, { name: cardName })
     return response.data
@@ -72,9 +66,7 @@ export const addCard = async (listId, cardName, navigate) => {
 
 // Delete Card from a List
 export const deleteCard = async (cardId, navigate) => {
-  const url = `https://api.trello.com/1/cards/${cardId}?key=${
-    import.meta.env.VITE_API_KEY
-  }&token=${import.meta.env.VITE_API_TOKEN}`
+  const url = `${URL}cards/${cardId}?key=${API_KEY}&token=${TOKEN}`
   try {
     await axios.delete(url)
   } catch (error) {

@@ -2,9 +2,10 @@ import axios from "axios"
 
 const API_KEY = import.meta.env.VITE_API_KEY
 const TOKEN = import.meta.env.VITE_API_TOKEN
+const URL = import.meta.env.VITE_URL
 
 const getCheckLists = async (cardId, navigate) => {
-  const url = `https://api.trello.com/1/cards/${cardId}/checklists?key=${API_KEY}&token=${TOKEN}`
+  const url = `${URL}cards/${cardId}/checklists?key=${API_KEY}&token=${TOKEN}`
   try {
     const response = await axios.get(url)
     return response.data
@@ -14,7 +15,7 @@ const getCheckLists = async (cardId, navigate) => {
 }
 
 const deleteCheckList = async (cardId, listId, navigate) => {
-  const url = `https://api.trello.com/1/cards/${cardId}/checklists/${listId}?key=${API_KEY}&token=${TOKEN}`
+  const url = `${URL}cards/${cardId}/checklists/${listId}?key=${API_KEY}&token=${TOKEN}`
   try {
     await axios.delete(url)
   } catch (error) {
@@ -23,7 +24,7 @@ const deleteCheckList = async (cardId, listId, navigate) => {
 }
 
 const addCheckList = async (cardId, checkListName, navigate) => {
-  const url = `https://api.trello.com/1/cards/${cardId}/checklists?key=${API_KEY}&token=${TOKEN}`
+  const url = `${URL}cards/${cardId}/checklists?key=${API_KEY}&token=${TOKEN}`
   try {
     const response = await axios.post(url, { name: checkListName })
     return response.data
@@ -35,7 +36,7 @@ const addCheckList = async (cardId, checkListName, navigate) => {
 // Checklist Items API functions
 
 const getCheckItems = async (checkListId, navigate) => {
-  const url = `https://api.trello.com/1/checklists/${checkListId}/checkItems?key=${API_KEY}&token=${TOKEN}`
+  const url = `${URL}checklists/${checkListId}/checkItems?key=${API_KEY}&token=${TOKEN}`
   try {
     const response = await axios.get(url)
     return response.data
@@ -45,7 +46,7 @@ const getCheckItems = async (checkListId, navigate) => {
 }
 
 const addCheckItem = async (checkListId, itemName, navigate) => {
-  const url = `https://api.trello.com/1/checklists/${checkListId}/checkItems?name=${itemName}&key=${API_KEY}&token=${TOKEN}`
+  const url = `${URL}checklists/${checkListId}/checkItems?name=${itemName}&key=${API_KEY}&token=${TOKEN}`
   try {
     const response = await axios.post(url)
     return response.data
@@ -55,7 +56,7 @@ const addCheckItem = async (checkListId, itemName, navigate) => {
 }
 
 const deleteCheckItem = async (checkListId, itemId, navigate) => {
-  const url = `https://api.trello.com/1/checklists/${checkListId}/checkItems/${itemId}?key=${API_KEY}&token=${TOKEN}`
+  const url = `${URL}checklists/${checkListId}/checkItems/${itemId}?key=${API_KEY}&token=${TOKEN}`
   try {
     await axios.delete(url)
   } catch (error) {
@@ -64,7 +65,7 @@ const deleteCheckItem = async (checkListId, itemId, navigate) => {
 }
 
 const updateCheckItemState = async (cardId, itemId, state, navigate) => {
-  const url = `https://api.trello.com/1/cards/${cardId}/checkItem/${itemId}`
+  const url = `${URL}cards/${cardId}/checkItem/${itemId}`
 
   try {
     const response = await axios.put(
