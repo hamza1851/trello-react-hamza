@@ -22,8 +22,8 @@ export const createBoard = async (newBoardData, navigate) => {
     const response = await axios.post(`${URL}boards/`, null, {
       params: {
         name: newBoardData.name,
-        key: import.meta.env.VITE_API_KEY,
-        token: import.meta.env.VITE_API_TOKEN,
+        key: API_KEY,
+        token: TOKEN,
       },
     })
     return response.data
