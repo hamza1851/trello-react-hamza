@@ -14,12 +14,9 @@ const CreateBoardDialogue = ({ open, onClose, onCreate }) => {
   const navigate = useNavigate()
 
   const handleCreate = () => {
-    onCreate(
-      {
-        name: newBoardName,
-      },
-      navigate
-    )
+    onCreate({
+      name: newBoardName,
+    })
     setNewBoardName("")
   }
 

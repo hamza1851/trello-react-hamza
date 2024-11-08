@@ -3,22 +3,23 @@ import { Box } from "@mui/material"
 import CreateBoardDialogue from "./CreateBoardDialogue"
 import BoardList from "./BoardList"
 import AddBoard from "./AddBoard"
-import { fetchBoards, createBoard } from "../../Api-Calls/boardsCRUD"
+import { useDispatch, useSelector } from "react-redux"
+import Spinner from "../Spinner"
 import { useNavigate } from "react-router-dom"
+import { createBoard, fetchBoards } from "../../Features/Board/boardSlice"
 
 const Boards = () => {
-  const [boards, setBoards] = useState([])
+  const dispatch = useDispatch()
+  const { boards, status } = useSelector((state) => state.boards)
   const [open, setOpen] = useState(false)
-
   const navigate = useNavigate()
 
   useEffect(() => {
-    const loadBoards = async () => {
-      const boardsData = await fetchBoards(navigate)
-      setBoards(boardsData)
-    }
-    loadBoards()
-  }, [])
+    if (status === "idle") dispatch(fetchBoards())
+  }, [dispatch, status])
+
+  if (status === "loading") return <Spinner />
+  if (status === "failed") navigate("/error")
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -28,10 +29,9 @@ const Boards = () => {
     setOpen(false)
   }
 
-  const handleCreateBoard = async (newBoardName, navigate) => {
-    await createBoard(newBoardName, navigate)
-    const boardsData = await fetchBoards(navigate)
-    setBoards(boardsData)
+  const handleCreateBoard = (newBoardName) => {
+    dispatch(createBoard(newBoardName))
+    dispatch(fetchBoards())
     handleClose()
   }
 
