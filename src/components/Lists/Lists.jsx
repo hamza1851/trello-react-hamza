@@ -2,35 +2,35 @@ import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import List from "./List"
 import CreateList from "./CreateList"
-import { fetchLists, deleteList } from "../../Api-Calls/listsCRUD"
+import { useDispatch, useSelector } from "react-redux"
+import { deleteList, fetchLists } from "../../Features/List/listSlice"
+import Spinner from "../Spinner"
 
 const Lists = () => {
-  const [allLists, setAllLists] = useState([])
+  const dispatch = useDispatch()
+  const { lists, status } = useSelector((state) => state.lists)
+
   const { boardID } = useParams()
 
   const navigate = useNavigate()
 
   useEffect(() => {
-    const getLists = async () => {
-      const listsData = await fetchLists(boardID, navigate)
-      setAllLists(listsData)
-    }
-    getLists()
-  }, [boardID])
+    dispatch(fetchLists(boardID))
+  }, [boardID, dispatch])
 
-  const handleDeleteList = async (listId) => {
-    await deleteList(listId, navigate)
-    setAllLists(allLists.filter((list) => list.id !== listId))
+  const handleDeleteList = (listId) => {
+    dispatch(deleteList(listId))
   }
 
-  const handleCreateList = (newList) => {
-    setAllLists((prev) => [newList, ...prev])
+  if (status === "loading") return <Spinner />
+  if (status === "failed") {
+    navigate("/error")
+    return
   }
-
   return (
     <div
       style={{
-        minHeight:"83vh",
+        minHeight: "83vh",
         overflowX: "auto",
         display: "flex",
         gap: "16px",
@@ -38,7 +38,7 @@ const Lists = () => {
         marginTop: "50px",
       }}
     >
-      {allLists.map((list) => (
+      {lists.map((list) => (
         <List
           key={list.id}
           list={list}
@@ -46,7 +46,7 @@ const Lists = () => {
           deleteList={handleDeleteList}
         />
       ))}
-      <CreateList onCreateList={handleCreateList} />
+      <CreateList />
     </div>
   )
 }

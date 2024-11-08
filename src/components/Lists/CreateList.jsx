@@ -6,11 +6,13 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogTitle from "@mui/material/DialogTitle"
 import { useNavigate, useParams } from "react-router-dom"
-import { createList } from "../../Api-Calls/listsCRUD"
+import { useDispatch } from "react-redux"
+import { createList } from "../../Features/List/listSlice"
 
-const CreateList = ({ onCreateList }) => {
+const CreateList = () => {
   const [open, setOpen] = useState(false)
   const [listName, setListName] = useState("")
+  const dispatch = useDispatch()
   const { boardID } = useParams()
 
   const navigate = useNavigate()
@@ -29,10 +31,9 @@ const CreateList = ({ onCreateList }) => {
     if (!listName) return
 
     try {
-      const newList = await createList(boardID, listName, navigate)
+      dispatch(createList({ boardID, listName }))
       setListName("")
       setOpen(false)
-      onCreateList(newList)
     } catch (error) {
       navigate("/error")
     }

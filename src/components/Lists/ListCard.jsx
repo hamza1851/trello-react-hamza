@@ -4,11 +4,18 @@ import Button from "@mui/material/Button"
 import DeleteIcon from "@mui/icons-material/Delete"
 import AddCardDialog from "./List-Cards/AddCardDialog"
 import CardDialog from "./List-Cards/CardDialog"
-import { addCard, deleteCard, fetchCards } from "../../Api-Calls/listsCRUD"
 import { useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import {
+  addCard,
+  deleteCard,
+  fetchCards,
+} from "../../Features/List/listCardSlice"
+import Spinner from "../Spinner"
 
 const ListCard = ({ listId }) => {
-  const [cardsList, setCardsList] = useState([])
+  const dispatch = useDispatch()
+  const { listCards, status } = useSelector((state) => state.listCards)
   const [showAddCardDialog, setShowAddCardDialog] = useState(false)
   const [selectedCard, setSelectedCard] = useState(null)
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false)
@@ -16,24 +23,28 @@ const ListCard = ({ listId }) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const loadCards = async () => {
+    const loadCards = () => {
       if (!listId) return
-      const cards = await fetchCards(listId)
-      setCardsList(cards)
+      dispatch(fetchCards(listId))
     }
     loadCards()
   }, [listId])
 
-  const handleDeleteCard = async (cardId) => {
-    await deleteCard(cardId)
-    setCardsList((prevCards) => prevCards.filter((card) => card.id !== cardId))
+  if (status === "loading") return <Spinner />
+  if (status === "failed") {
+    navigate("/error")
+    return
   }
 
-  const handleAddCard = async (cardName) => {
+  const handleDeleteCard = (cardId) => {
+    dispatch(deleteCard(cardId))
+  }
+
+  const handleAddCard = (cardName) => {
     if (!cardName) return
 
-    const newCard = await addCard(listId, cardName, navigate)
-    setCardsList((prevCards) => [...prevCards, newCard])
+    dispatch(addCard({ listId, cardName }))
+
     setShowAddCardDialog(false)
   }
 
@@ -48,7 +59,7 @@ const ListCard = ({ listId }) => {
 
   return (
     <>
-      {cardsList.map((card) => (
+      {listCards.map((card) => (
         <div key={card.id} style={{ marginBottom: "16px", width: "100%" }}>
           <Card
             onClick={() => handleOpenCard(card)}
