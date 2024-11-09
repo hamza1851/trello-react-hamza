@@ -16,6 +16,7 @@ import Spinner from "../Spinner"
 const ListCard = ({ listId }) => {
   const dispatch = useDispatch()
   const { listCards, status } = useSelector((state) => state.listCards)
+  const cards = listCards[listId] || []
   const [showAddCardDialog, setShowAddCardDialog] = useState(false)
   const [selectedCard, setSelectedCard] = useState(null)
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false)
@@ -37,13 +38,15 @@ const ListCard = ({ listId }) => {
   }
 
   const handleDeleteCard = (cardId) => {
-    dispatch(deleteCard(cardId))
+    dispatch(deleteCard(cardId)).then(() => dispatch(fetchCards(listId)))
   }
 
   const handleAddCard = (cardName) => {
     if (!cardName) return
 
-    dispatch(addCard({ listId, cardName }))
+    dispatch(addCard({ listId, cardName })).then(() =>
+      dispatch(fetchCards(listId))
+    )
 
     setShowAddCardDialog(false)
   }
@@ -59,7 +62,7 @@ const ListCard = ({ listId }) => {
 
   return (
     <>
-      {listCards.map((card) => (
+      {cards.map((card) => (
         <div key={card.id} style={{ marginBottom: "16px", width: "100%" }}>
           <Card
             onClick={() => handleOpenCard(card)}
