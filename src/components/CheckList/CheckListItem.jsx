@@ -9,39 +9,36 @@ import {
   DialogContent,
   DialogTitle,
   LinearProgress,
-  CircularProgress,
   Typography,
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
+import { useDispatch, useSelector } from "react-redux"
 import {
-  getCheckItems,
   addCheckItem,
   deleteCheckItem,
+  getCheckItems,
   updateCheckItemState,
-} from "../../Api-Calls/checklistAPI"
+} from "../../Features/CheckLists/checkListItemSlice"
+import Spinner from "../Spinner"
+import { useNavigate } from "react-router-dom"
 
-const CheckListItem = ({ checkList, navigate }) => {
-  const [checkItems, setCheckItems] = useState([])
+const CheckListItem = ({ checkList }) => {
+  const dispatch = useDispatch()
+  const { checklistItem, status } = useSelector((state) => state.checklistItems)
   const [newCheckItem, setNewCheckItem] = useState("")
-  const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [progress, setProgress] = useState(0)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    const fetchCheckItems = async () => {
-      setLoading(true)
-      try {
-        const items = await getCheckItems(checkList.id, navigate)
-        setCheckItems(items)
-        updateProgress(items)
-      } catch (error) {
-        navigate("/error")
-      } finally {
-        setLoading(false)
-      }
+    dispatch(getCheckItems(checkList.id))
+  }, [checkList.id, dispatch])
+
+  useEffect(() => {
+    if (checklistItem[checkList.id]?.length) {
+      updateProgress(checklistItem[checkList.id])
     }
-    fetchCheckItems()
-  }, [checkList.id])
+  }, [checklistItem[checkList.id]])
 
   const updateProgress = (items) => {
     const completedItems = items.filter(
@@ -52,61 +49,42 @@ const CheckListItem = ({ checkList, navigate }) => {
     setProgress(progress)
   }
 
-  const handleAddCheckItem = async () => {
+  const handleAddCheckItem = () => {
     if (!newCheckItem) return
+    dispatch(
+      addCheckItem({ checkListId: checkList.id, itemName: newCheckItem })
+    ).then(() => dispatch(getCheckItems(checkList.id)))
 
-    try {
-      const addedItem = await addCheckItem(checkList.id, newCheckItem, navigate)
-      setCheckItems((prev) => [...prev, addedItem])
-      updateProgress([...checkItems, addedItem])
-      setNewCheckItem("")
-      setOpen(false)
-    } catch (error) {
-      navigate("/error")
-    }
+    setNewCheckItem("")
+    setOpen(false)
   }
 
-  const handleDeleteCheckItem = async (itemId) => {
-    try {
-      await deleteCheckItem(checkList.id, itemId, navigate)
-      const updatedItems = checkItems.filter((item) => item.id !== itemId)
-      setCheckItems(updatedItems)
-      updateProgress(updatedItems)
-    } catch (error) {
-      navigate("/error")
-    }
+  const handleDeleteCheckItem = (itemId) => {
+    dispatch(deleteCheckItem({ checkListId: checkList.id, itemId })).then(() =>
+      dispatch(getCheckItems(checkList.id))
+    )
   }
 
-  const handleCheckItemStateChange = async (itemId, currentState) => {
+  const handleCheckItemStateChange = (itemId, currentState) => {
     const newState = currentState === "complete" ? "incomplete" : "complete"
-
-    try {
-      await updateCheckItemState(checkList.idCard, itemId, newState, navigate)
-      const updatedItems = checkItems.map((item) => {
-        if (item.id === itemId) {
-          return { ...item, state: newState }
-        }
-        return item
+    dispatch(
+      updateCheckItemState({
+        cardId: checkList.idCard,
+        itemId,
+        state: newState,
       })
-      setCheckItems(updatedItems)
-      updateProgress(updatedItems)
-    } catch (error) {
-      navigate("/error")
-    }
+    ).then(() => dispatch(getCheckItems(checkList.id)))
+  }
+
+  if (status === "loading") return <Spinner />
+  if (status === "failed") {
+    navigate("/error")
+    return null
   }
 
   return (
     <Box>
-      {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100px"
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
+      {checklistItem[checkList.id]?.length > 0 && (
         <Box display="flex" alignItems="center" mb={2}>
           <Typography variant="body2" sx={{ minWidth: "50px" }}>
             {Math.round(progress)}%
@@ -117,16 +95,16 @@ const CheckListItem = ({ checkList, navigate }) => {
             sx={{
               width: "100%",
               ml: 1,
-              bgcolor: "#81C784", // lighter green background color
+              bgcolor: "#81C784",
               "& .MuiLinearProgress-bar": {
-                backgroundColor: "#4CAF50", // darker green for progress
+                backgroundColor: "#4CAF50",
               },
             }}
           />
         </Box>
       )}
 
-      {checkItems.map((item) => (
+      {checklistItem[checkList.id]?.map((item) => (
         <Box key={item.id} display="flex" alignItems="center" mb={1}>
           <Checkbox
             checked={item.state === "complete"}
@@ -141,34 +119,40 @@ const CheckListItem = ({ checkList, navigate }) => {
             {item.name}
           </span>
           <Button
+            sx={{ marginLeft: "auto" }}
             onClick={() => handleDeleteCheckItem(item.id)}
-            color="error"
-            sx={{ minWidth: "auto" }}
           >
             <DeleteIcon />
           </Button>
         </Box>
       ))}
 
-      <Button variant="outlined" onClick={() => setOpen(true)}>
-        + Add Item
+      <Button onClick={() => setOpen(true)} variant="outlined">
+        Add New Item
       </Button>
+
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Add Checklist Item</DialogTitle>
+        <DialogTitle>Add Check Item</DialogTitle>
         <DialogContent>
           <TextField
-            autoFocus
-            margin="dense"
             label="Item Name"
+            variant="outlined"
             fullWidth
-            variant="standard"
             value={newCheckItem}
             onChange={(e) => setNewCheckItem(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleAddCheckItem}>Save</Button>
+          <Button onClick={() => setOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAddCheckItem}
+            color="primary"
+            disabled={!newCheckItem}
+          >
+            Add
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

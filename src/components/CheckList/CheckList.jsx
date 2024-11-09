@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+
 import {
   Button,
   Dialog,
@@ -8,32 +11,25 @@ import {
   TextField,
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
-import CheckListItem from "./CheckListItem"
+
 import {
-  getCheckLists,
-  deleteCheckList,
   addCheckList,
-} from "../../Api-Calls/checklistAPI"
-import { useNavigate } from "react-router-dom"
+  deleteCheckList,
+  getCheckLists,
+} from "../../Features/CheckLists/checkListSlice"
+
+import CheckListItem from "./CheckListItem"
+import Spinner from "../Spinner"
 
 const CheckList = ({ card }) => {
-  const [checkList, setCheckList] = useState([])
+  const dispatch = useDispatch()
+  const { checklist, status } = useSelector((state) => state.checkLists)
   const [checkListName, setCheckListName] = useState("")
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const fetchCheckLists = async () => {
-      if (card.id) {
-        try {
-          const lists = await getCheckLists(card.id, navigate)
-          setCheckList(lists)
-        } catch (error) {
-          navigate("/error")
-        }
-      }
-    }
-    fetchCheckLists()
+    dispatch(getCheckLists(card.id))
   }, [card.id])
 
   const handleCloseAddList = () => {
@@ -44,27 +40,23 @@ const CheckList = ({ card }) => {
   const handleAddList = async () => {
     if (!checkListName) return
 
-    try {
-      const newCheckList = await addCheckList(card.id, checkListName, navigate)
-      setCheckList((prev) => [...prev, newCheckList])
-      handleCloseAddList()
-    } catch (error) {
-      navigate("/error")
-    }
+    dispatch(addCheckList({ cardId: card.id, checkListName }))
+    handleCloseAddList()
   }
 
   const handleDeleteCheckList = async (list) => {
-    try {
-      await deleteCheckList(card.id, list.id, navigate)
-      setCheckList((prev) => prev.filter((item) => item.id !== list.id))
-    } catch (error) {
-      navigate("/error")
-    }
+    dispatch(deleteCheckList({ cardId: card.id, listId: list.id }))
+  }
+
+  if (status === "loading") return <Spinner />
+  if (status === "failed") {
+    navigate("/error")
+    return
   }
 
   return (
     <div style={{ width: "500px" }}>
-      {checkList.map((list) => (
+      {checklist.map((list) => (
         <div
           key={list.id}
           style={{
@@ -104,7 +96,7 @@ const CheckList = ({ card }) => {
               <DeleteIcon />
             </Button>
           </div>
-          <CheckListItem checkList={list} navigate={navigate} />
+          <CheckListItem checkList={list} />
         </div>
       ))}
       <Button
