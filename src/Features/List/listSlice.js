@@ -5,8 +5,6 @@ const API_KEY = import.meta.env.VITE_API_KEY
 const TOKEN = import.meta.env.VITE_API_TOKEN
 const URL = import.meta.env.VITE_URL
 
-// List Operations
-
 export const fetchLists = createAsyncThunk(
   "lists/fetchLists",
   async (boardID, { rejectWithValue }) => {
@@ -82,7 +80,7 @@ const listSlice = createSlice({
       })
       .addCase(createList.fulfilled, (state, action) => {
         state.status = "succeeded"
-        state.lists.push(action.payload)
+        state.lists.unshift(action.payload)
       })
       .addCase(createList.rejected, (state, action) => {
         state.status = "failed"

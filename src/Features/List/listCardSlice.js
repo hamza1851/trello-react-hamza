@@ -57,7 +57,7 @@ export const deleteCard = createAsyncThunk(
 const listCards = createSlice({
   name: "listCards",
   initialState: {
-    listCards: [],
+    listCards: {},
     status: "idle",
     error: null,
   },
@@ -69,7 +69,8 @@ const listCards = createSlice({
       })
       .addCase(fetchCards.fulfilled, (state, action) => {
         state.status = "succeeded"
-        state.listCards = action.payload
+        const listId = action.meta.arg
+        state.listCards[listId] = action.payload
       })
       .addCase(fetchCards.rejected, (state, action) => {
         state.status = "failed"
@@ -80,7 +81,8 @@ const listCards = createSlice({
       })
       .addCase(addCard.fulfilled, (state, action) => {
         state.status = "succeeded"
-        state.listCards.push(action.payload)
+        const listId = action.meta.arg
+        state.listCards[listId] = action.payload
       })
       .addCase(addCard.rejected, (state, action) => {
         state.status = "failed"
@@ -91,9 +93,8 @@ const listCards = createSlice({
       })
       .addCase(deleteCard.fulfilled, (state, action) => {
         state.status = "succeeded"
-        state.listCards = state.listCards.filter(
-          (card) => card.id !== action.payload
-        )
+        const listId = action.payload
+        delete state.listCards[listId]
       })
       .addCase(deleteCard.rejected, (state, action) => {
         state.status = "failed"
