@@ -1,16 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
-
-const API_KEY = import.meta.env.VITE_API_KEY
-const TOKEN = import.meta.env.VITE_API_TOKEN
-const URL = import.meta.env.VITE_URL
+import {
+  addCheckItemURL,
+  deleteCheckItemURL,
+  getCheckItemsURL,
+  updateCheckItemStateURL,
+} from "../../Services/API/checkLists"
 
 export const getCheckItems = createAsyncThunk(
   "checkList/getChecklistItems",
   async (checkListId, { rejectWithValue }) => {
-    const url = `${URL}checklists/${checkListId}/checkItems?key=${API_KEY}&token=${TOKEN}`
     try {
-      const response = await axios.get(url)
+      const response = await axios.get(getCheckItemsURL(checkListId))
       return { data: response.data, checkListId }
     } catch (error) {
       return rejectWithValue(
@@ -23,9 +24,10 @@ export const getCheckItems = createAsyncThunk(
 export const addCheckItem = createAsyncThunk(
   "checkList/addCheckItem",
   async ({ checkListId, itemName }, { rejectWithValue }) => {
-    const url = `${URL}checklists/${checkListId}/checkItems?name=${itemName}&key=${API_KEY}&token=${TOKEN}`
     try {
-      const response = await axios.post(url)
+      const response = await axios.post(
+        addCheckItemURL({ checkListId, itemName })
+      )
       return { data: response.data, checkListId }
     } catch (error) {
       return rejectWithValue(
@@ -38,9 +40,8 @@ export const addCheckItem = createAsyncThunk(
 export const deleteCheckItem = createAsyncThunk(
   "checkList/deleteCheckItem",
   async ({ checkListId, itemId }, { rejectWithValue }) => {
-    const url = `${URL}checklists/${checkListId}/checkItems/${itemId}?key=${API_KEY}&token=${TOKEN}`
     try {
-      await axios.delete(url)
+      await axios.delete(deleteCheckItemURL({ checkListId, itemId }))
       return { checkListId, itemId }
     } catch (error) {
       return rejectWithValue(
@@ -53,17 +54,9 @@ export const deleteCheckItem = createAsyncThunk(
 export const updateCheckItemState = createAsyncThunk(
   "checkList/updateCheckItemState",
   async ({ cardId, itemId, state }, { rejectWithValue }) => {
-    const url = `${URL}cards/${cardId}/checkItem/${itemId}`
     try {
       const response = await axios.put(
-        url,
-        { state },
-        {
-          params: {
-            key: API_KEY,
-            token: TOKEN,
-          },
-        }
+        updateCheckItemStateURL({ cardId, itemId, state })
       )
       return { data: response.data, cardId, itemId, state }
     } catch (error) {
