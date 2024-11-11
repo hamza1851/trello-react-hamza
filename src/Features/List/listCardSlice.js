@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
-
-const API_KEY = import.meta.env.VITE_API_KEY
-const TOKEN = import.meta.env.VITE_API_TOKEN
-const URL = import.meta.env.VITE_URL
+import {
+  addCardURL,
+  deleteCardURL,
+  fetchCardsURL,
+} from "../../Services/API/lists"
 
 // List Cards Operations
 
@@ -11,8 +12,7 @@ export const fetchCards = createAsyncThunk(
   "listCards/fectchCards",
   async (listId, { rejectWithValue }) => {
     try {
-      const url = `${URL}lists/${listId}/cards?key=${API_KEY}&token=${TOKEN}`
-      const response = await axios.get(url)
+      const response = await axios.get(fetchCardsURL(listId))
       return response.data
     } catch (error) {
       return rejectWithValue(
@@ -27,9 +27,8 @@ export const addCard = createAsyncThunk(
   async ({ listId, cardName }, { rejectWithValue }) => {
     if (!cardName) return
 
-    const url = `${URL}cards?idList=${listId}&key=${API_KEY}&token=${TOKEN}`
     try {
-      const response = await axios.post(url, { name: cardName })
+      const response = await axios.post(addCardURL({ listId, cardName }))
       return response.data
     } catch (error) {
       return rejectWithValue(
@@ -42,9 +41,8 @@ export const addCard = createAsyncThunk(
 export const deleteCard = createAsyncThunk(
   "listCards/deleteCard",
   async (cardId, { rejectWithValue }) => {
-    const url = `${URL}cards/${cardId}?key=${API_KEY}&token=${TOKEN}`
     try {
-      await axios.delete(url)
+      await axios.delete(deleteCardURL(cardId))
       return cardId
     } catch (error) {
       return rejectWithValue(

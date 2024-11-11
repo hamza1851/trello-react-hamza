@@ -1,17 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
-
-const API_KEY = import.meta.env.VITE_API_KEY
-const TOKEN = import.meta.env.VITE_API_TOKEN
-const URL = import.meta.env.VITE_URL
+import {
+  createListURL,
+  deleteListURL,
+  fetchListsURL,
+} from "../../Services/API/lists"
 
 export const fetchLists = createAsyncThunk(
   "lists/fetchLists",
   async (boardID, { rejectWithValue }) => {
-    const url = `${URL}boards/${boardID}/lists?key=${API_KEY}&token=${TOKEN}`
-
     try {
-      const response = await axios.get(url)
+      const response = await axios.get(fetchListsURL(boardID))
       return response.data
     } catch (error) {
       return rejectWithValue(
@@ -24,12 +23,8 @@ export const fetchLists = createAsyncThunk(
 export const createList = createAsyncThunk(
   "lists/createList",
   async ({ boardID, listName }, { rejectWithValue }) => {
-    const url = `${URL}lists?key=${API_KEY}&token=${TOKEN}`
     try {
-      const response = await axios.post(url, {
-        name: listName,
-        idBoard: boardID,
-      })
+      const response = await axios.post(createListURL({ boardID, listName }))
       return response.data
     } catch (error) {
       return rejectWithValue(
@@ -42,9 +37,8 @@ export const createList = createAsyncThunk(
 export const deleteList = createAsyncThunk(
   "lists/deleteList",
   async (listId, { rejectWithValue }) => {
-    const url = `${URL}lists/${listId}/closed?key=${API_KEY}&token=${TOKEN}`
     try {
-      await axios.put(url, { value: true })
+      await axios.put(deleteListURL(listId), { value: true })
       return listId
     } catch (error) {
       return rejectWithValue(
